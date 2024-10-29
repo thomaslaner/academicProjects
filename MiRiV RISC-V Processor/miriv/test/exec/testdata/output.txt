@@ -1,0 +1,545 @@
+#TEST AGENDA:
+#exec_op, reg_write_mem, reg_write_wr can be ignored at the moment
+#FLUSH
+# 1)flush
+#   causes the unit to store a nop to the pipeline registers
+#ALU - NORMAL OPERATIONS
+#   ALU_input:  information from op
+#   ALU_output: stored into aluresult
+#   pc_new_out should carry the branch target address which is calculated
+#   signals with suffixes _in should be passed unchanged to signals _out
+# 2)alusrc1 = '1' & alusrc2 = '0'
+#   alu input 1 is passed immediate from op
+# 3)alusrc1 = '0' & alusrc2 = '1'
+#   alu input 2 is passed immediate from op
+# 4) alusrc1 & alusrc2 = '0'
+#   no input is immediate
+# 5)alusrc1 = '1' & alusrc2 = '1'
+#   alu input 1 and 2 are passed immediate from op
+#STALL
+# 6)stall
+#   causes the stage not to save inputs into its internal registers
+#BRANCHING
+# 7)alusrc3 = '1' & alu_inputs equal
+#   z is high if alu inputs are equal
+#   pc_new_out should be equal to rs1 input + immediate
+#   other signals with suffixes _in should be passed unchanged to _out
+# 8)alusrc3 = '0' & alu_inputs not equal
+#   z is low if alu inputs are not equal
+#   pc_new_out should be equal to pc_in + immediate
+#   other signals with suffixes _in should be passed unchanged to _out
+#MEMORY
+# 9)memory
+#   data which should be written to memory has to be saved in wrdata
+#   data which should be written to memory is stored in op_readdata2 (according to datapath)
+
+#1) ALU - alusrc1 = '1' & alusrc2 = '0'
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000100001
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_NOP
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#2) flush
+#pc_old_out (16b - is og next pc)
+0000000000000000
+#pc_new_out (16b - is calculated branch target address)
+0000000000000000
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000000000
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000000
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT = MEM_NOP
+#memop_out.branch (branch_type)
+BR_NOP
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT = WB_NOP
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#3) ALU - alusrc1 = '1' & alusrc2 = '0'
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000011111
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_NOP
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#4) ALU - alusrc1 = '0' & alusrc2 = '0'
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000000100
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_NOP
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#5) ALU - alusrc1 = '0' & alusrc2 = '0'
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000111100
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_NOP
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#6) STALL
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000111100
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_NOP
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#7) alusrc3 = '1' & alu_inputs not equal
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0000000000011110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000001000100101010
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000100000011
+#zero (1b - flag used for branch (high if inputs are equal))
+0
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_CND
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#8) alusrc3 = '0' & alu_inputs not equal
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110   
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000000000
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+1
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_CND
+#memop_out.memread (1b)
+0
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_W
+#WBOP_OUT
+#wbop_out.rd (5b)
+00000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+#9) memory
+#pc_old_out (16b - is og next pc)
+0001000101001000
+#pc_new_out (16b - is calculated branch target address)
+0001000101100110
+#aluresult (32b - passed the result of the alu into the next stage)
+00000000000000000000000000000100
+#wrdata (32b - contains informations which should be written to memory)
+00000000000000000000000000000011
+#zero (1b - flag used for branch (high if inputs are equal))
+-
+#MEMOP_OUT
+#memop_out.branch (branch_type)
+BR_CND
+#memop_out.memread (1b)
+1
+#memop_out.memwrite (1b)
+0
+#memop_out.memtype (memu_op_type)
+MEM_B
+#WBOP_OUT
+#wbop_out.rd (5b)
+10000
+#wbop_out.write (1b)
+0
+#wbop_out.src (wb_src_type)
+WBS_ALU
+#EXEC - IGNORED BECAUSE FORWARDING IS NOT IMPLEMENTED YET (= EXEC_NOP)
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediante value from instruction)
+00000000000000000000000000000000

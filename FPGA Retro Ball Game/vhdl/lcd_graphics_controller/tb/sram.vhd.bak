@@ -1,0 +1,116 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use std.textio.all;
+use ieee.std_logic_textio.all;
+
+
+entity sram is
+	generic (
+		OUTPUT_DIR   : string  := "./"
+	);
+	port (
+		-- SRAM interface
+		dq     : inout std_logic_vector(15 downto 0);
+		addr   : in	std_logic_vector(19 downto 0);
+		lb_n   : in	std_logic;
+		ub_n   : in	std_logic;
+		ce_n   : in	std_logic;
+		oe_n   : in	std_logic;
+		we_n   : in	std_logic;
+
+		-- on rising_edge: dump frame to file
+		write_file : in std_logic;
+		base_address : natural := 0;
+		width        : natural := 400;
+		height       : natural := 240
+	);
+end entity;
+
+
+architecture arch of sram is
+		
+	--storage	
+	type storage is array (0 to 999999) of std_logic_vector(15 downto 0);
+	
+	--time_constants
+	constant t_wc : TIME := 20;
+	constant t_sce : TIME := 12;
+	constant t_aw : TIME := 12;
+	constant t_ha : TIME := 0;
+	constant t_sa : TIME := 0;
+	constant t_pwe1 : TIME := 12;
+	constant t_pwe2 : TIME := 17;
+	constant t_sd : TIME := 9;
+	constant t_hd : TIME := 0;
+
+begin
+	--add your implementation here
+	
+	sram_process : process
+		variable counter : integer := 0;
+	begin
+		
+		if ce_n = '1' then
+			--not selected
+		else
+			if lb_n = '1' and ub_n = '1' then
+				--output disabled
+				--HIGH-Z, HIGH-Z
+			elsif we_n = '1'  
+				if oe_n = '1' then
+					--output disabled
+					--HIGH-Z, HIGH-Z
+				else
+					--read		
+					if lb_n = '1' then
+						if ub_n = '0' then
+							--HIGH-Z, DOUT
+						end if;
+					else
+						if ub_n = '1' then
+							--DOUT, HIGH-Z
+						else
+							--DOUT, DOUT
+						end if ;
+					end if ;
+				end if;
+			elsif we_n = '0' then
+				--write
+
+				wait t_sce-t_sd;
+
+				--store new value at least recently used position
+				storage[i mod 999999] := dq;
+				
+				--adjust counter
+				counter := counter +1;
+				if counter 999999 then
+					counter := 0;
+				end if ;
+
+				if lb_n = '0' then
+					if ub_n = '1' then
+						--DIN, HIGH-Z
+					else
+						--DIN, DIN
+					end if ;
+				else
+					if ub_n = '0' then
+						--HIGH-Z, DIN
+					end if;
+				end if ;
+			end if;
+		end if ;
+
+		
+
+	end process ; -- sram_process
+
+	
+
+	
+
+
+end architecture;

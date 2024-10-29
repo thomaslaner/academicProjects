@@ -1,0 +1,296 @@
+#TEST AGENDA:
+#
+#FLUSH
+# 1)flush
+#   causes the unit to store a nop to the pipeline registers
+#STALL
+# 2)stall
+#   causes the stage not to save inputs into its internal registers
+# MEM_OUT:
+#   MEM_OUT - addr: which address has been read from memory
+#   MEM_OUT - rd: if read acces has been used
+#   MEM_OUT - wr: if write acces has been used
+#   MEM_OUT - byteena: which byte is enabled
+#   MEM_OUT - wrdata hex: Data that should be written to memory
+# PCSRC
+# taken/not taken branch - to fetch stage
+
+#1) no branch
+#pcnew hex
+0000
+#pcold hex
+0000
+#pcsrc
+0
+#busy
+0
+#aluresult hex
+00000000
+#memresult hex
+00000000
+#MEM_OUT - addr
+00000000000000
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0
+
+#2) no branch
+#pcnew hex
+1000
+#pcold hex
+1000
+#pcsrc
+0
+#busy
+0
+#aluresult hex
+00000000
+#memresult hex
+00000000
+#MEM_OUT - addr
+00000000000000
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0
+
+#3) unconditional branch
+#pcnew hex
+000C
+#pcold hex
+0004
+#pcsrc
+1
+#busy
+0
+#aluresult hex
+00000000
+#memresult hex
+00000000
+#MEM_OUT - addr
+00000000000000
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0
+
+#4) conditional branch
+#pcnew hex
+000C
+#pcold hex
+0008
+#pcsrc
+0
+#busy
+0
+#aluresult hex
+00000000
+#memresult hex
+00000000
+#MEM_OUT - addr
+00000000000000
+#MEM_OUT - rd
+1
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0
+
+#5) conditional branch
+#pcnew hex
+000C
+#pcold hex
+0008
+#pcsrc
+1
+#busy
+0
+#aluresult hex
+00000001
+#memresult hex
+00000000
+#MEM_OUT - addr
+00000000000000
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+1
+#XS
+0
+
+#6) conditional branch (condition inverted) zero=1
+#pcnew hex
+000C
+#pcold hex
+0008
+#pcsrc
+0
+#busy
+1
+#aluresult hex
+00000C00
+#memresult hex
+00000000
+#MEM_OUT - addr word address
+0001100000000
+#MEM_OUT - rd
+1
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0
+
+#7) conditional branch (condition inverted) zero=0
+#pcnew hex
+000C
+#pcold hex
+0004
+#pcsrc
+1
+#busy
+1
+#aluresult hex
+000000B0
+#memresult hex
+0000000A
+#MEM_OUT - addr word address
+0000000101100
+#MEM_OUT - rd
+1
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0
+
+#8) no branch - write
+#pcnew hex
+000C
+#pcold hex
+0004
+#pcsrc
+0
+#busy
+0
+#aluresult hex
+000000D0
+#memresult hex
+0000000A
+#MEM_OUT - addr word address
+0000000110100
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+1
+#MEM_OUT - byteena
+1000
+#MEM_OUT - wrdata hex
+0E000000
+#XL
+0
+#XS
+0
+
+#9) stall
+#pcnew hex
+000C
+#pcold hex
+0004
+#pcsrc
+0
+#busy
+0
+#aluresult hex
+000000D0
+#memresult hex
+0000000A
+#MEM_OUT - addr word address
+0000000110100
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1000
+#MEM_OUT - wrdata hex
+0E000000
+#XL
+0
+#XS
+0
+
+#10) flush
+#pcnew hex
+0000
+#pcold hex
+0000
+#pcsrc
+0
+#busy
+0
+#aluresult hex
+00000000
+#memresult hex
+00000000
+#MEM_OUT - addr word address
+0000000000000
+#MEM_OUT - rd
+0
+#MEM_OUT - wr
+0
+#MEM_OUT - byteena
+1111
+#MEM_OUT - wrdata hex
+00000000
+#XL
+0
+#XS
+0

@@ -1,0 +1,198 @@
+#1) RESPONSE TO RESET
+#mem_busy
+0
+#pc_out
+0000000000000000
+#instr
+00000000
+#mem_out.address (for next pc)
+00000000000001
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#2) CHECK RESPONSE TO PC & ADDRESS INCREASE
+#mem_busy
+0
+#pc_out
+0000000000000100
+#instr
+a1df4312
+#mem_out.address (for next pc)
+00000000000010
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#3) CHECK RESPONSE TO PC & ADDRESS INCREASE
+#mem_busy
+0
+#pc_out
+0000000000001000
+#instr
+5f000d01
+#mem_out.address (for next pc)
+00000000000011
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#4) RESPONSE TO STALL
+#mem_busy
+0
+#pc_out
+0000000000001000
+#instr
+5f000d01
+#mem_out.address (for next pc)
+00000000000011
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#5) RESPONSE TO STALL & PC_IN & PC_SRC
+#mem_busy
+0
+#pc_out
+0000000000001000
+#instr
+5f000d01
+#mem_out.address (for next pc)
+00000000000011
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#6) RESPONSE TO PC_IN & PC_SRC
+#mem_busy
+0
+#pc_out
+0000000000001100
+#instr
+26a1d2cf
+#mem_out.address (for next pc)
+00000000000101
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#7) CHECK RESPONSE TO PC & ADDRESS INCREASE
+#mem_busy
+0
+#pc_out
+0000000000010100
+#instr
+87a97db2
+#mem_out.address (for next pc)
+00000000000110
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#8) FLUSH
+#mem_busy
+0
+#pc_out
+0000000000011000
+#instr (NOP = x"00000013")
+00000013
+#mem_out.address (for next pc)
+00000000000111
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#9) CHECK RESPONSE TO FLUSH
+#mem_busy
+0
+#pc_out
+0000000000011100
+#instr
+aeae4b4b
+#mem_out.address (for next pc)
+00000000001000
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+
+#10) CHECK RESPONSE TO FLUSH 2
+#mem_busy
+0
+#pc_out
+0000000000100000
+#instr
+1a3b7eb3
+#mem_out.address (for next pc)
+00000000001001
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000
+
+#11) CHECK RESPONSE TO FLUSH 3
+#mem_busy
+0
+#pc_out
+0000000000100100
+#instr
+2b2a3b89
+#mem_out.address (for next pc)
+00000000001010
+#mem_out.rd FIXED VALUE
+1
+#mem_out.wr FIXED VALUE
+0
+#mem_out.byteena FIXED VALUE
+1111
+#mem_out.wrdata FIXED VALUE
+00000000000000000000000000000000

@@ -1,0 +1,91 @@
+# vsim -onfinish exit lcd_graphics_controller_tb -msgmode both
+# vsim -onfinish exit lcd_graphics_controller_tb -msgmode both 
+# Start time: 16:03:01 on Apr 01,2021
+# ** Note: (vsim-3812) Design is being optimized...
+# //  Questa Sim
+# //  Version 10.6c_1 linux Sep 15 2017
+# //
+# //  Copyright 1991-2017 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading ieee.std_logic_textio(body)
+# Loading work.lcd_graphics_controller_pkg(body)
+# Loading work.gfx_if_pkg(body)
+# Loading std.env(body)
+# Loading work.lcd_graphics_controller_tb(tb)#1
+# Loading ieee.vital_timing(body)
+# Loading ieee.vital_primitives(body)
+# Loading altera.dffeas_pack
+# Loading altera.altera_primitives_components
+# Loading cycloneive.cycloneive_atom_pack(body)
+# Loading cycloneive.cycloneive_components
+# Loading work.lcd_graphics_controller(structure)#1
+# Loading ieee.std_logic_arith(body)
+# Loading cycloneive.cycloneive_io_obuf(arch)#1
+# Loading cycloneive.cycloneive_io_ibuf(arch)#1
+# Loading cycloneive.cycloneive_clkctrl(vital_clkctrl)#1
+# Loading cycloneive.cycloneive_ena_reg(behave)#1
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#1
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#2
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#3
+# Loading altera.dffeas(vital_dffeas)#1
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#4
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#5
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#6
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#7
+# Loading altera.dffeas(vital_dffeas)#2
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#8
+# Loading altera.dffeas(vital_dffeas)#3
+# Loading altera.dffeas(vital_dffeas)#4
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#9
+# Loading altera.dffeas(vital_dffeas)#5
+# Loading altera.dffeas(vital_dffeas)#6
+# Loading cycloneive.cycloneive_ram_block(block_arch)#1
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#1
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#2
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#3
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#4
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#5
+# Loading cycloneive.cycloneive_ram_pulse_generator(pgen_arch)#1
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#6
+# Loading altera.dffeas(vital_dffeas)#7
+# Loading altera.dffeas(vital_dffeas)#8
+# Loading altera.dffeas(vital_dffeas)#9
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#10
+# Loading cycloneive.cycloneive_ram_block(block_arch)#2
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#7
+# Loading altera.dffeas(vital_dffeas)#10
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#11
+# Loading altera.dffeas(vital_dffeas)#11
+# Loading cycloneive.cycloneive_lcell_comb(vital_lcell_comb)#12
+# Loading altera.dffeas(vital_dffeas)#12
+# Loading altera.dffeas(vital_dffeas)#13
+# Loading cycloneive.cycloneive_ram_block(block_arch)#3
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#8
+# Loading altera.dffeas(vital_dffeas)#14
+# Loading cycloneive.cycloneive_ram_block(block_arch)#4
+# Loading cycloneive.cycloneive_ram_block(block_arch)#5
+# Loading cycloneive.cycloneive_ram_register(reg_arch)#9
+#  run -all
+# ** Note: starting simulation
+#    Time: 650 ns  Iteration: 0  Instance: /lcd_graphics_controller_tb
+# ** Note: START WRITING TO IMG_FILE
+#    Time: 41290 ns  Iteration: 1  Instance: /lcd_graphics_controller_tb/sram_inst
+# ** Note: DONE WRITING TO IMG_FILE
+#    Time: 41290 ns  Iteration: 1  Instance: /lcd_graphics_controller_tb/sram_inst
+# ** Note: simulation done!
+#    Time: 68670 ns  Iteration: 0  Instance: /lcd_graphics_controller_tb
+# End time: 16:03:10 on Apr 01,2021, Elapsed time: 0:00:09
+# Errors: 0, Warnings: 0

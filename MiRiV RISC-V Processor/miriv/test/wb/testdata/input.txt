@@ -1,0 +1,170 @@
+#TEST AGENDA:
+#
+#FLUSH
+# 1)flush
+#   causes the unit to store a nop to the pipeline registers
+#STALL
+# 2)stall
+#   causes the stage not to save inputs into its internal registers
+
+#1) Source: ALU, wr=0
+#stall
+0
+#flush
+0
+#WB - rd
+00000
+#WB - write
+0
+#WB - src (ALU, MEM, OPC)
+WBS_ALU
+#aluresult hex
+00000000
+#memresult hex
+00000000
+#OPC hex
+0005
+
+#2) Source: ALU, wr=1
+#stall
+0
+#flush
+0
+#WB - rd
+00000
+#WB - write
+1
+#WB - src (ALU, MEM, OPC)
+WBS_ALU
+#aluresult hex
+000000A0
+#memresult hex
+00000000
+#OPC hex
+0005
+
+#3) Source: ALU, wr=1
+#stall
+0
+#flush
+0
+#WB - rd
+00010
+#WB - write
+1
+#WB - src (ALU, MEM, OPC)
+WBS_ALU
+#aluresult hex
+00000007
+#memresult hex
+00000008
+#OPC hex
+0005
+
+#4) Source: MEM, wr=0
+#stall
+0
+#flush
+0
+#WB - rd
+00010
+#WB - write
+0
+#WB - src (ALU, MEM, OPC)
+WBS_MEM
+#aluresult hex
+00000007
+#memresult hex
+00000008
+#OPC hex
+0005
+
+#5) Source: MEM, wr=1
+#stall
+0
+#flush
+0
+#WB - rd
+00010
+#WB - write
+1
+#WB - src (ALU, MEM, OPC)
+WBS_MEM
+#aluresult hex
+00000007
+#memresult hex
+00000008
+#OPC hex
+0005
+
+#6) Source: PC, wr=0
+#stall
+0
+#flush
+0
+#WB - rd
+00010
+#WB - write
+0
+#WB - src (ALU, MEM, OPC)
+WBS_OPC
+#aluresult hex
+00000007
+#memresult hex
+00000008
+#OPC hex
+0005
+
+#7) Source: PC, wr=1
+#stall
+0
+#flush
+0
+#WB - rd
+00010
+#WB - write
+1
+#WB - src (ALU, MEM, OPC)
+WBS_OPC
+#aluresult hex
+00000001
+#memresult hex
+00000002
+#OPC hex
+0005
+
+#8) stall
+#stall
+1
+#flush
+0
+#WB - rd
+00010
+#WB - write
+1
+#WB - src (ALU, MEM, OPC)
+WBS_OPC
+#aluresult hex
+00000001
+#memresult hex
+00000002
+#OPC hex
+0005
+
+#9) flush
+#stall
+0
+#flush
+1
+#WB - rd
+00010
+#WB - write
+1
+#WB - src (ALU, MEM, OPC)
+WBS_OPC
+#aluresult hex
+00000001
+#memresult hex
+00000002
+#OPC hex
+0005

@@ -1,0 +1,15 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+use work.ball_game_pkg.all;
+
+entity ssd_controller is
+	port (
+		clk: in std_logic;
+		res_n: in std_logic;
+		game_state: in game_state_t;
+		controller: in nes_buttons_t;
+		hex0, hex1, hex2, hex3, hex4, hex5, hex6, hex7: out std_logic_vector(6 downto 0);
+	);
+end entity;
+

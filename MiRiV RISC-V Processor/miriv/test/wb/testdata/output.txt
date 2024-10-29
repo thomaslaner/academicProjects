@@ -1,0 +1,159 @@
+#TEST AGENDA:
+#
+#FLUSH
+# 1)flush
+#   causes the unit to store a nop to the pipeline registers
+#STALL
+# 2)stall
+#   causes the stage not to save inputs into its internal registers
+
+#1) Source: ALU, wr=0
+#write
+0
+#register
+00000
+#data hex
+00000000
+
+
+
+
+
+
+
+
+
+
+
+#2) Source: ALU, wr=1
+#write
+1
+#register
+00000
+#data hex
+000000A0
+
+
+
+
+
+
+
+
+
+
+
+#3) Source: ALU, wr=1
+#write
+1
+#register
+00010
+#data hex
+00000007
+
+
+
+
+
+
+
+
+
+
+
+#4) Source: MEM, wr=0
+#write
+0
+#register
+00010
+#data hex
+00000008
+
+
+
+
+
+
+
+
+
+
+
+#5) Source: MEM, wr=1
+#write
+1
+#register
+00010
+#data hex
+00000008
+
+
+
+
+
+
+
+
+
+
+
+#6) Source: PC, wr=0 => PC+4
+#write
+0
+#register
+00010
+#data hex
+00000009
+
+
+
+
+
+
+
+
+
+
+
+#7) Source: PC, wr=1 => PC+4
+#write
+1
+#register
+00010
+#data hex
+00000009
+
+
+
+
+
+
+
+
+
+
+
+#8) stall
+#write
+1
+#register
+00010
+#data hex
+00000009
+
+
+
+
+
+
+
+
+
+
+#9)
+#write
+0
+#register
+00000
+#data hex
+00000000

@@ -1,0 +1,14 @@
+package ssd_controller_pkg is
+
+	type in_type is record
+		clk: in std_logic;
+		res_n: in std_logic;
+		game_state: in ball_game_state_t;
+		controller: in nes_buttons_t;
+	end record;
+
+	type output_type is record
+		hex0, hex1, hex2, hex3, hex4, hex5, hex6, hex7: out std_logic_vector(6 downto 0)
+	end record;
+	
+end ssd_controller_pkg;

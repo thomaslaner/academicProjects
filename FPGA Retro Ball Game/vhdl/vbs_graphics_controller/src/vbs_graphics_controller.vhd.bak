@@ -1,0 +1,802 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.vbs_graphics_controller_pkg.all;
+use work.ram_pkg.all;
+use work.math_pkg.all;
+use work.gfx_util_pkg.all;
+use work.gfx_if_pkg.all;
+
+entity vbs_graphics_controller is
+	generic (
+		CLK_FREQ : integer := 50_000_000
+	);
+	port (
+		clk   : in std_logic;
+		res_n : in std_logic;
+		
+		--instruction interface
+		gfx_instr       : in std_logic_vector(GFX_INSTR_WIDTH-1 downto 0);
+		gfx_instr_wr    : in std_logic;
+		gfx_instr_full  : out std_logic;
+		gfx_data        : in std_logic_vector(GFX_DATA_WIDTH-1 downto 0);
+		gfx_data_wr     : in std_logic;
+		gfx_data_full   : out std_logic;
+		
+		gfx_frame_sync    : out std_logic;
+		
+		-- interface to ADV7123
+		vga_r : out std_logic_vector(7 downto 0);
+		vga_g : out std_logic_vector(7 downto 0);
+		vga_b : out std_logic_vector(7 downto 0);
+		vga_clk : out std_logic;
+		vga_sync_n : out std_logic;
+		vga_blank_n : out std_logic
+	);
+end entity;
+
+architecture arch of vbs_graphics_controller is
+
+--constants
+	constant FIFO_BUFFER_DEPTH : integer := 128;
+	constant SCREEN_RESOLUTION_WIDTH : integer := 400;
+	constant SCREEN_RESOLUTION_HEIGHT : integer := 240;
+	constant DP_VIDEO_RAM_ADDR_WIDTH : integer := log2c(96000);	
+	constant DP_VIDEO_RAM_DATA_WIDTH : integer := 2;
+
+--fifo_buffer signals
+
+	--instr_fifo_buffer
+		signal instr_fifo_rd_data : std_logic_vector(GFX_INSTR_WIDTH-1 downto 0);
+		signal instr_fifo_rd : std_logic;
+		signal instr_fifo_wr_data : std_logic_vector(GFX_INSTR_WIDTH-1 downto 0);
+		signal instr_fifo_wr : std_logic;
+		signal instr_fifo_empty : std_logic;
+		signal instr_fifo_full : std_logic;
+		signal instr_fifo_half_full : std_logic;
+
+	--data_fifo_buffer
+		signal data_fifo_rd_data : std_logic_vector(GFX_DATA_WIDTH-1 downto 0);
+		signal data_fifo_rd : std_logic;
+		signal data_fifo_wr_data : std_logic_vector(GFX_DATA_WIDTH-1 downto 0);
+		signal data_fifo_wr : std_logic;
+		signal data_fifo_empty : std_logic;
+		signal data_fifo_full : std_logic;
+		signal data_fifo_half_full : std_logic;
+
+--dp_video_ram_signals 
+	
+	--read port signals 
+		signal dp_video_ram_rd_addr : std_logic_vector(DP_VIDEO_RAM_ADDR_WIDTH - 1 downto 0);		--address from which to read
+		signal dp_video_ram_rd_data : std_logic_vector(DP_VIDEO_RAM_DATA_WIDTH - 1 downto 0);		--data which is read
+		signal dp_video_ram_rd : std_logic;															--high in order to read
+
+	--write port signals
+		signal dp_video_ram_wr_addr : std_logic_vector(DP_VIDEO_RAM_ADDR_WIDTH - 1 downto 0);		--address onto which data is written
+		signal dp_video_ram_wr_data : std_logic_vector(DP_VIDEO_RAM_DATA_WIDTH - 1 downto 0);		--data which is written
+		signal dp_video_ram_wr : std_logic;															--high in order to write
+
+--frame_reader
+	signal frame_reader_frame_start : std_logic;
+	signal frame_reader_next_pixel : std_logic;
+	signal frame_reader_data : std_logic_vector(DP_VIDEO_RAM_DATA_WIDTH-1 downto 0);
+	signal frame_reader_base_addr : std_logic_vector(DP_VIDEO_RAM_ADDR_WIDTH-1 downto 0);
+
+--rasterizer signals
+	
+	--instruction & data handling
+		signal current_instruction : std_logic_vector(GFX_INSTR_WIDTH-1 downto 0);
+		signal primary_color : std_logic_vector(1 downto 0) := "11";
+		signal secondary_color : std_logic_vector(1 downto 0) := "00";
+		signal current_data_one, current_data_two, current_data_three, current_data_four : std_logic_vector(GFX_DATA_WIDTH-1 downto 0);
+		signal current_pattern, pattern_0, pattern_1, pattern_2, pattern_3, pattern_4, pattern_5, pattern_6, pattern_7 : std_logic_vector(20 downto 0);
+			-- each pattern contains the same parameters:
+			-- 20 -> 16 :	ls (line shift parameter, how many pixel in each new line the blocks are shiftet to the right)
+			-- 15 -> 12 :	dx (amount of pixel between each block-column)
+			-- 11 -> 8  :	dy (amount of pixel between each block-lines)
+			-- 7 -> 4   :	bw (block width, amount of pixels colored in primary color in x-direction) 
+			-- 3 -> 0   :	bh (block height, amount of pixels colored in primary color in y-direction)  
+
+	--gfx_line
+		
+		--control signals
+			signal line_start : std_logic;
+			signal line_stall : std_logic := '0';
+			signal line_busy : std_logic;
+		
+		--drawing parameters
+			signal line_x0 : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal line_x1 : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal line_y0 : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+			signal line_y1 : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+		
+		--pixel coordinates output
+			signal line_pixel_valid : std_logic;
+			signal line_pixel_x : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal line_pixel_y : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+				
+	--gfx_circle
+
+		--control signals
+			signal circle_start : std_logic;
+			signal circle_stall : std_logic := '0';
+			signal circle_busy : std_logic;
+		
+		--drawing parameters
+			signal circle_x_center : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal circle_y_center : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+			signal circle_radius   : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			
+		--pixel coordinates output
+			signal circle_pixel_valid : std_logic;
+			signal circle_pixel_x : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal circle_pixel_y : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+
+	--gfx_rect
+
+		--control signals
+			signal rect_start : std_logic;
+			signal rect_stall : std_logic := '0';
+			signal rect_busy : std_logic;
+			
+		--drawing paramers
+			signal rect_x : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal rect_y : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+			signal rect_w : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal rect_h : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+			signal rect_bw : std_logic_vector(3 downto 0);
+			signal rect_bh : std_logic_vector(3 downto 0);
+			signal rect_dx : std_logic_vector(3 downto 0);
+			signal rect_dy : std_logic_vector(3 downto 0);
+			signal rect_ls : std_logic_vector(4 downto 0);
+			signal rect_fill : std_logic;
+			signal rect_draw : std_logic;
+
+		--pixel coordinates output
+			signal rect_pixel_valid : std_logic;
+			signal rect_pixel_x : std_logic_vector(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+			signal rect_pixel_y : std_logic_vector(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+			signal rect_pixel_color : std_logic;
+
+begin
+
+--instr_fifo_buffer instantiation
+	instr_fifo_inst : fifo_1c1r1w
+	generic map (
+		DEPTH  => FIFO_BUFFER_DEPTH,
+		DATA_WIDTH => GFX_INSTR_WIDTH
+	)
+	port map (
+		clk => clk,
+		res_n => res_n,
+		
+		--read signals from fifo_buffer
+		rd_data => instr_fifo_rd_data,
+		rd => instr_fifo_rd,
+		
+		--write signals to fifo_buffer
+		wr_data => instr_fifo_wr_data,
+		wr => instr_fifo_wr,
+
+		--synchronization signals
+		empty => instr_fifo_empty,
+		full => instr_fifo_full,
+		half_full => instr_fifo_half_full
+	);
+
+--data_fifo_buffer instantiation
+	data_fifo_inst : fifo_1c1r1w
+	generic map (
+		DEPTH  => FIFO_BUFFER_DEPTH,
+		DATA_WIDTH => GFX_DATA_WIDTH
+	)
+	port map (
+		clk => clk,
+		res_n => res_n,
+
+		--read signals from fifo_buffer
+		rd_data => data_fifo_rd_data,
+		rd => data_fifo_rd,
+
+		--write signals to fifo_buffer
+		wr_data => data_fifo_wr_data,
+		wr => data_fifo_wr,
+		
+		--synchronization signals
+		empty => data_fifo_empty,
+		full => data_fifo_full,
+		half_full => data_fifo_half_full
+	);
+	
+--dual_port_video_ram instantiation
+	--used to save frames
+	dp_video_ram_inst : dp_ram_1c1r1w
+	generic map (
+		ADDR_WIDTH => DP_VIDEO_RAM_ADDR_WIDTH,
+		DATA_WIDTH => DP_VIDEO_RAM_DATA_WIDTH
+	)
+	port map (
+		clk => clk,
+		
+		--read port which reads into frame_reader
+		rd1_addr => dp_video_ram_rd_addr, 						
+		rd1_data => dp_video_ram_rd_data, 						
+		rd1 => dp_video_ram_rd,									
+
+		--write port which gets input from rasterizer
+		wr2_addr => dp_video_ram_wr_addr,									
+		wr2_data => dp_video_ram_wr_data,						
+		wr2 => dp_video_ram_wr 									
+	);
+	
+
+--frame_reader instantiation
+	--transforms data in dp_vram into data which can be used in the external interface
+	frame_reader_inst : frame_reader
+	generic map (
+		WIDTH => SCREEN_RESOLUTION_WIDTH,
+		HEIGHT => SCREEN_RESOLUTION_HEIGHT,
+		VRAM_ADDR_WIDTH => DP_VIDEO_RAM_ADDR_WIDTH,
+		VRAM_DATA_WIDTH => DP_VIDEO_RAM_DATA_WIDTH
+	)
+	port map (
+		clk => clk,
+		res_n => res_n,
+		
+		-- frame synchronization signal
+		frame_start => frame_reader_frame_start,							--output to notify about soon starting new frame
+		vram_base_addr => frame_reader_base_addr,
+		
+		-- interface to the video RAM (dp_video_ram_inst)
+		vram_rd => dp_video_ram_rd,
+		vram_addr => dp_video_ram_rd_addr,
+		vram_data => dp_video_ram_rd_data,
+		
+		--asserting pix_rd yields the next pixel data on the next clock edge 
+		pix_rd => frame_reader_next_pixel, 															--asserting high yiels next pix_data on next clk_edge
+		pix_data => frame_reader_data																--next pixel data
+	);
+
+--gfx_line instantiation
+
+	gfx_line_inst : gfx_line
+	generic map (
+		WIDTH => SCREEN_RESOLUTION_WIDTH, 
+		HEIGHT => SCREEN_RESOLUTION_HEIGHT
+	)
+	port map (
+		clk => clk, 
+		res_n => res_n, 
+		start => line_start,
+		stall => line_stall,
+		busy => line_busy,
+		x0 => line_x0,
+		x1 => line_x1,
+		y0 => line_y0,
+		y1 => line_y1,
+		pixel_valid => line_pixel_valid,
+		pixel_x => line_pixel_x,
+		pixel_y => line_pixel_y
+	);
+
+--gfx_circle instantiation
+
+	gfx_circle_inst : gfx_circle
+	generic map (
+		WIDTH => SCREEN_RESOLUTION_WIDTH, 
+		HEIGHT => SCREEN_RESOLUTION_HEIGHT
+	)
+	port map (
+		clk => clk, 
+		res_n => res_n, 
+		start => circle_start,
+		stall => circle_stall,
+		busy => circle_busy,
+		x_center => circle_x_center,
+		y_center => circle_y_center,
+		radius => circle_radius,
+		pixel_valid => circle_pixel_valid,
+		pixel_x => circle_pixel_x,
+		pixel_y => circle_pixel_y
+	);
+
+--gfx_rect instantiation
+
+	gfx_rect_inst : gfx_rect
+	generic map (
+		WIDTH => SCREEN_RESOLUTION_WIDTH, 
+		HEIGHT => SCREEN_RESOLUTION_HEIGHT
+	)
+	port map (
+		clk => clk, 
+		res_n => res_n, 
+		start => rect_start,
+		stall => rect_stall,
+		busy => rect_busy,
+		x => rect_x,
+		y => rect_y,
+		w => rect_w,
+		h => rect_h,
+		bw => rect_bw,
+		bh => rect_bh,
+		dx => rect_dx,
+		dy => rect_dy,
+		ls => rect_ls,
+		fill => rect_fill,
+		draw =>  rect_draw,
+		pixel_valid => rect_pixel_valid,
+		pixel_x => rect_pixel_x,
+		pixel_y => rect_pixel_y,
+		pixel_color => rect_pixel_color
+	);
+
+--rasterizer
+
+	--to set x_fifo full flag if x_fifo is full
+	gfx_instr_full <= instr_fifo_full;
+	gfx_data_full <= data_fifo_full;
+
+	--to notify outside about soon starting frame
+	gfx_frame_sync <= frame_reader_frame_start;
+
+	--to set predefined patterns
+	pattern_0 <= "000000000000000010001";
+	pattern_7 <= "000000001000100000000";
+
+	rasterizer : process 
+
+		--procedure to get right # of data blocks, which is defined by the passed parameter
+		procedure get_data(number_of_data : integer) is
+		begin	
+			
+			wait until rising_edge(clk);
+			if (data_fifo_empty = '0') then
+				data_fifo_rd <= '1';
+				wait until rising_edge(clk);
+				current_data_one <= data_fifo_rd_data;
+				data_fifo_rd <= '0';
+				wait until rising_edge(clk);
+			end if ;
+		
+			if number_of_data >= 2  then
+				wait until rising_edge(clk);
+				if (data_fifo_empty = '0') then
+					data_fifo_rd <= '1';
+					wait until rising_edge(clk);
+					current_data_two <= data_fifo_rd_data;
+					data_fifo_rd <= '0';
+					wait until rising_edge(clk);	
+				end if ;
+			end if ;
+
+			if number_of_data >= 3  then
+				wait until rising_edge(clk);
+				if (data_fifo_empty = '0') then
+					data_fifo_rd <= '1';
+					wait until rising_edge(clk);
+					current_data_three <= data_fifo_rd_data;
+					data_fifo_rd <= '0';
+					wait until rising_edge(clk);
+				end if ;
+			end if ;
+
+			if number_of_data = 4  then
+				wait until rising_edge(clk);
+				if (data_fifo_empty = '0') then
+					data_fifo_rd <= '1';
+					wait until rising_edge(clk);
+					current_data_four <= data_fifo_rd_data;
+					data_fifo_rd <= '0';
+					wait until rising_edge(clk); 	
+				end if ;
+			end if ;
+
+		end procedure;
+
+		--calculates address in dp_video_ram from passed x- and y-coord and saves the specified color at it in dp_video_ram
+		procedure write_pixel_to_dp_vram(x_coord_data, y_coord_data : std_logic_vector(15 downto 0); color : std_logic_vector(1 downto 0)) is
+			variable x_int, y_int, address_value_int : integer;
+		begin
+			--calculate corresponding address in dp_vram and feed signal dp_video_ram_wr_addr with it
+			x_int := (to_integer(unsigned(x_coord_data)));
+			y_int := (to_integer(unsigned(y_coord_data)));
+			address_value_int := x_int + y_int * SCREEN_RESOLUTION_WIDTH;
+			dp_video_ram_wr_addr <= std_logic_vector(to_unsigned(address_value_int, DP_VIDEO_RAM_ADDR_WIDTH));
+
+			--define color for to be stored pixel
+			dp_video_ram_wr_data <= color;
+
+			--store pixel into dp_video_ram
+			dp_video_ram_wr <= '1';
+			wait until rising_edge(clk);
+			dp_video_ram_wr <= '0';
+
+		end procedure;
+		
+	begin
+		if res_n = '0' then
+			--instruction & data handling
+			current_instruction <= (others => '0'); /*\reset instruction = nop?\*/
+			
+			--gfx_line
+			line_start <= '0';
+			line_stall <= '0';
+			line_x0 <= (others => '0');
+			line_x1 <= (others => '0');
+			line_y0 <= (others => '0');
+			line_y1 <= (others => '0');
+			
+			--gfx_circle
+			circle_start <= '0';
+			circle_stall <= '0';
+			circle_x_center <= (others => '0');
+			circle_y_center <= (others => '0');
+			circle_radius <= (others => '0');
+
+			--gfx_rect
+			rect_start <= '0';
+			rect_stall <= '0';
+			rect_x <= (others => '0');
+			rect_y <= (others => '0');
+			rect_w <= (others => '0');
+			rect_h <= (others => '0');
+			rect_bw <= (others => '0');
+			rect_bh <= (others => '0');
+			rect_dx <= (others => '0');
+			rect_dy <= (others => '0');
+			rect_ls <= (others => '0');
+			rect_fill  <= '0';
+			rect_draw <= '0';
+
+			--color
+			primary_color <= "11";
+			secondary_color <= "00";
+
+			--user patterns
+			current_pattern <= (others => '0');
+			pattern_1 <= (others => '0');
+			pattern_2 <= (others => '0');
+			pattern_3 <= (others => '0');
+			pattern_4 <= (others => '0');
+			pattern_5 <= (others => '0');
+			pattern_6 <= (others => '0');
+
+			gfx_frame_sync <= '0';
+
+		elsif rising_edge(clk) then
+			
+			--write new instr input to instr_buffer
+			if (gfx_instr_wr = '1' and instr_fifo_full = '0') then
+				instr_fifo_wr <= '1';
+				instr_fifo_wr_data <= gfx_instr;
+				wait until rising_edge(clk);
+				instr_fifo_wr <= '0';
+				wait until rising_edge(clk);
+			end if ;
+
+			--write new data input to data_buffer
+			if (gfx_data_wr = '1' and data_fifo_full = '0') then
+				data_fifo_wr <= '1';
+				data_fifo_wr_data <= gfx_data;
+				wait until rising_edge(clk);
+				data_fifo_wr <= '0';
+				wait until rising_edge(clk);
+			end if ;
+
+			if (instr_fifo_empty = '0') then
+				instr_fifo_rd <= '1';
+				wait until rising_edge(clk);
+				current_instruction <= instr_fifo_rd_data;
+				instr_fifo_rd <= '0'; 
+				wait until rising_edge(clk);	
+			end if ;
+
+			--FORMAT A
+			if is_instr_format_A(current_instruction) then
+
+				case( current_instruction(3 downto 0) ) is
+					when OPCODE_NOP =>
+						--do nothing
+					when OPCODE_CLEAR =>
+						--loop through whole dp_video_ram and set every value to 
+						clensing_loop_rows : for y in 0 to 239 loop
+							clensing_loop_columns : for x in 0 to 399 loop
+								write_pixel_to_dp_vram(std_logic_vector(to_unsigned(x, 16)), std_logic_vector(to_unsigned(y, 16)), secondary_color);
+							end loop ; -- clensing_loop_columns
+						end loop ; -- clensing_loop_rows
+
+					when OPCODE_FRAME_SYNC =>
+							--blocks instructions until start of new frame is frame_start signal has a rising_edge
+
+							--check if frame_start has a rising edge (-> new frame in 2 clk_cycles)
+							wait until rising_edge(frame_reader_frame_start);
+
+							--wait two clk_cycles until frame_reader actually starts to fetch a new frame
+							wait until rising_edge(clk);
+							wait until rising_edge(clk);
+
+							--assert gfx_frame_sync for one clk_cycle when new frame starts
+							gfx_frame_sync <= '1';
+							wait until rising_edge(clk);
+							gfx_frame_sync <= '0';
+
+							/*\frame buffer implementation\*/
+							--if double buffering is enables, switch frame buffers after new frame starts
+
+					when OPCODE_SET_PIXEL =>
+						
+						--get necessary data
+						get_data(2);
+						
+						--save pixel colored in the prim_color into dp_vram
+						write_pixel_to_dp_vram(current_data_one, current_data_two, primary_color);
+
+					when OPCODE_DRAW_LINE =>
+						
+						--get necessary data
+						get_data(4);
+						
+						--pass drawing parameters to function
+						line_x0 <= current_data_one(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+						line_y0 <= current_data_two(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+						line_x1 <= current_data_three(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+						line_y1 <= current_data_four(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+
+						--initiate drawing operation
+						wait until rising_edge(clk);
+						line_start <= '1';
+						wait until rising_edge(clk);
+						line_start <= '0';
+
+						--handle output: write calculated pixel intp dp_video_ram
+						process_line_output : while line_busy = '1' loop
+							if line_pixel_valid = '1' then
+								write_pixel_to_dp_vram(line_pixel_x, line_pixel_y, primary_color);
+							end if ;
+						end loop ; -- process_line_output
+
+					when OPCODE_DRAW_CIRCLE =>
+
+						--get necessary data
+						get_data(3);
+						
+						--pass drawing parameters to function
+						circle_x_center <= current_data_one(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+						circle_y_center <= current_data_two(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+						circle_radius <= current_data_three(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+
+						--initiate drawing operation
+						wait until rising_edge(clk);
+						circle_start <= '1';
+						wait until rising_edge(clk);
+						circle_start <= '0';
+
+						--handle output: write calculated pixel intp dp_video_ram
+						process_circle_output : while circle_busy = '1' loop
+							if circle_pixel_valid = '1' then
+								write_pixel_to_dp_vram(circle_pixel_x, circle_pixel_y, primary_color);
+							end if ;
+						end loop ; -- process_circle_output
+
+					when others => 
+						--report "invalid instruction format recognized";
+				end case;
+			--FORMAT B
+			elsif is_instr_format_B(current_instruction) then
+				
+				case( current_instruction(5 downto 4) ) is
+					when OPCODE_SET_CFG =>
+						/*\todo\*/
+					when OPCODE_SET_COLOR =>
+						get_data(1);
+
+						case( current_instruction(0) ) is
+							when '1' =>
+							--primary color
+								primary_color <= current_data_one(1 downto 0);
+							when '0' =>
+							--secondary color
+								secondary_color <= current_data_one(1 downto 0);
+							when others =>
+								--report "invalid instruction format recognized";
+						end case ;	
+
+					when OPCODE_SET_PATTERN =>
+							
+						get_data(2);
+
+						case(current_instruction(2 downto 0)) is
+							when "001" =>
+								pattern_1 <= current_data_two(4 downto 0) & current_data_one;
+							when "010" =>
+								pattern_2 <= current_data_two(4 downto 0) & current_data_one;
+							when "011" =>
+								pattern_3 <= current_data_two(4 downto 0) & current_data_one;
+							when "100" =>
+								pattern_4 <= current_data_two(4 downto 0) & current_data_one;
+							when "101" =>
+								pattern_5 <= current_data_two(4 downto 0) & current_data_one;
+							when "110" =>
+								pattern_6 <= current_data_two(4 downto 0) & current_data_one;
+							when others =>
+								--ignore pattern ID 0 and 7
+						end case ;
+
+					when others =>
+						--report "invalid instruction format recognized";
+				end case ;
+			--FORMAT C
+			elsif is_instr_format_C(current_instruction) then
+
+				case( current_instruction(6 downto 5) ) is
+					when OPCODE_DRAW_RECT =>
+						
+						--get necessary data
+						get_data(4);
+							
+						--pass drawing parameters to function
+						rect_x <= current_data_one(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+						rect_y <= current_data_two(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+						rect_w <= current_data_three(log2c(SCREEN_RESOLUTION_WIDTH)-1 downto 0);
+						rect_h <= current_data_four(log2c(SCREEN_RESOLUTION_HEIGHT)-1 downto 0);
+
+						/*\really\*/
+						--coloring of pixel which aren't in the pattern (1 -> empty, 0 -> secondary color)
+						rect_fill <= current_instruction(4);
+
+						--if border should be drawn of not (1 -> drawn, 0 -> not drawn)
+						rect_draw <= current_instruction(3);
+
+						--pass pattern defined by instruction to rect_component
+						case( current_instruction(2 downto 0) ) is
+							when "000" =>
+								current_pattern <= pattern_0;
+							when "001" =>
+								current_pattern <= pattern_1;
+							when "010" =>
+								current_pattern <= pattern_2;
+							when "011" =>
+								current_pattern <= pattern_3;
+							when "100" =>
+								current_pattern <= pattern_4;
+							when "101" =>
+								current_pattern <= pattern_5;
+							when "110" =>
+								current_pattern <= pattern_6;
+							when "111" =>
+								current_pattern <= pattern_7;
+							when others =>
+								--not possible
+						end case ;
+						
+						rect_ls <= current_pattern(20 downto 16);
+						rect_dx <= current_pattern(15 downto 12);
+						rect_dy <= current_pattern(11 downto 8);
+						rect_bw <= current_pattern(7 downto 4);
+						rect_bh <= current_pattern(3 downto 0);
+						
+						--initiate drawing operation
+						wait until rising_edge(clk);
+						rect_start <= '1';
+						wait until rising_edge(clk);
+						rect_start <= '0';
+
+						--handle output: write calculated pixel intp dp_video_ram
+						process_rect_output : while rect_busy = '1' loop
+							if rect_pixel_valid = '1' then
+								--if currently a valid pattern can be read from rect_component
+								if rect_pixel_color = '1' then
+									--part of pattern (primary color)
+									write_pixel_to_dp_vram(rect_pixel_x, rect_pixel_y, primary_color);
+								else
+									--not part of pattern (secondary color or nothing (alpha mode))
+									if current_instruction(4) = '0' then
+										--otherwise alpha mode is enabled and only pixel which are part of the pattern should be drawn
+										write_pixel_to_dp_vram(rect_pixel_x, rect_pixel_y, secondary_color);
+									end if ;
+								end if ;
+							end if ;
+						end loop ;
+
+					when others =>
+						--report "invalid instruction format recognized";
+				end case ;
+
+			else
+				--report "invalid instruction format recognized";
+			end if ;
+
+		end if ;
+		wait on clk, res_n; /*\todo: sensitivity list\*/
+	end process ; -- rasterizer
+
+--external interface
+
+	vga_r <= (others => '0');
+	vga_b <= (others => '0');
+
+	external_interface : process(clk, res_n)
+		
+		--returns hex value corresponding to passed color parameter
+		function color_setter(color_data : std_logic_vector(1 downto 0)) return std_logic_vector is
+			begin
+				case(color_data) is
+					when "00" =>
+						return "00000000";		--black
+					when "01" =>
+						return "00001000"; 	--darkgray
+					when "10" =>
+						return "00101111"; 	--lightgray
+					when others =>
+						return "11111111"; 	--white
+				end case ;
+			end function;
+	
+		variable counter : integer := 0;
+		variable frame_running : std_logic := '0';
+
+		--vbs format times
+		--h-sync: 4.7micorsec -> /clk(0.02microsec) -> 235
+		--front-porch: 1.65microsec -> /clk(0.02 microsec) -> 82.5
+		--text-saf area: 41.6mircosec -> /clk(0.02 microsec) -> 2080
+	
+	begin
+		
+		if res_n = '0' then
+			vga_clk <= '0';
+		else
+		
+		--vga_clk on 50fps
+			-- /*\does vga_clk really have 50fps aquivalent?\*/
+			-- if rising_edge(clk) then
+			
+			-- 	counter := counter +1;
+
+			-- 	if counter = 1000000 then
+			-- 		counter := 0;
+					
+			-- 		--drive vga_clk
+			-- 		if vga_clk = '1' then
+			-- 			vga_clk <= '0';
+			-- 		else
+			-- 			vga_clk <= '1';
+			-- 		end if ;
+
+			-- 	end if ;
+
+			-- end if ;
+		--
+
+			--64microsec = 64*10^(-6)sec -> /clk(0.02microsec) -> 3200 -> 8clk_cycles/line
+			
+
+			if rising_edge(clk) then
+				if rising_edge(frame_reader_frame_start) then
+				
+					
+
+				elsif frame_running = '1' then
+					
+
+
+				end if;
+			end if ;
+			
+			if rising_edge(vga_clk) then
+				--50fps
+
+				-- 1V -> white
+				-- 0.3V -> black
+				-- < 0.3V -> config signals
+			end if ;
+
+		end if;
+
+	end process ; -- external_interface
+	
+
+end arch ;
+
+
+

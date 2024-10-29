@@ -1,0 +1,1617 @@
+
+#1) OPC_LUI 
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110111, rd = 1, imm = 1)
+00000000000000000001000010110111
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+1
+#reg_write.reg (5b)
+00010
+#reg_write.data (32b)
+00000000000000000000000000001000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#2) OPC_AUIPC 
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010111, rd = 1, imm = 1)
+00000000000000000001000010010111
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+1
+#reg_write.reg (5b)
+00011
+#reg_write.data (32b)
+00000000000000000000000000000010
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#3) OPC_JAL 
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1101111, rd = 1, imm = 1)
+00000000001000000000000011101111
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#4) OPC_JALR
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100111, rd = 1, funct3 = 0, rs1 = 2 imm = 1)
+00000000000100010000000011100111
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#5) OPC_BRANCH - BEQ
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100011, imm = 1, rd = 1, funct3 = 0, rs1 = 2, rs2 = 3)
+00000000001100010000000101100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#6) OPC_BRANCH - BNE
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100011, imm = 1, rd = 1, funct3 = 001, rs1 = 2, rs2 = 3)
+00000000001100010001000101100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#7) OPC_BRANCH - BLT
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100011, imm = 1, rd = 1, funct3 = 100, rs1 = 2, rs2 = 3)
+00000000001100010100000101100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#8) OPC_BRANCH - BGE
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100011, imm = 1, rd = 1, funct3 = 101, rs1 = 2, rs2 = 3)
+00000000001100010101000101100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#9) OPC_BRANCH - BLTU
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100011, imm = 1, rd = 1, funct3 = 110, rs1 = 2, rs2 = 3)
+00000000001100010110000101100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#10) OPC_BRANCH - BGEU
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 1100011, imm = 1, rd = 1, funct3 = 111, rs1 = 2, rs2 = 3)
+00000000001100010111000101100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#11) OPC_LOAD - LB
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0000011, rd = 1, funct3 = 000, rs1 = 2 imm = 1)
+00000000000100010000000010000011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#12) OPC_LOAD - LH
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0000011, rd = 1, funct3 = 001, rs1 = 2 imm = 1)
+00000000000100010001000010000011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#13) OPC_LOAD - LW
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0000011, rd = 1, funct3 = 010, rs1 = 2 imm = 1)
+00000000000100010010000010000011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#14) OPC_LOAD - LBU
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0000011, rd = 1, funct3 = 100, rs1 = 2 imm = 1)
+00000000000100010100000010000011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#15) OPC_LOAD - LHU
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0000011, rd = 1, funct3 = 101, rs1 = 2 imm = 1)
+00000000000100010101000010000011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#16) OPC_STORE - SB
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0100011, rd = 1, funct3 = 000, rs1 = 2, rs2 = 3, imm = 1)
+00000000001100010000000010100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#17) OPC_STORE - SH
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0100011, rd = 1, funct3 = 001, rs1 = 2, rs2 = 3, imm = 1)
+00000000001100010001000010100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#18) OPC_STORE - SW
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0100011, rd = 1, funct3 = 010, rs1 = 2, rs2 = 3, imm = 1)
+00000000001100010010000010100011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#19) OPC_OP_IMM - ADDI
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 000, rs1 = 2 imm = 1)
+00000000000100010000000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#20) OPC_OP_IMM - SLTI
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 010, rs1 = 2 imm = 1)
+00000000000100010010000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#21) OPC_OP_IMM - SLTIU
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 011, rs1 = 2 imm = 1)
+00000000000100010011000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#22) OPC_OP_IMM - XORI
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 100, rs1 = 2 imm = 1)
+00000000000100010100000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#23) OPC_OP_IMM - ORI
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 110, rs1 = 2 imm = 1)
+00000000000100010110000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#24) OPC_OP_IMM - ANDI
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 111, rs1 = 2 imm = 1)
+00000000000100010111000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#25) OPC_OP_IMM - SLLI
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 001, rs1 = 2 imm = 1)
+00000000000100010001000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#26) OPC_OP_IMM - SRLI (difference to SRAI - immediate(10) = 0)
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 101, rs1 = 2 imm = 1)
+00000000000100010101000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#27) OPC_OP_IMM - SRAI  (difference to SRLI - immediate(10) = 1)
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0010011, rd = 1, funct3 = 101, rs1 = 2 imm = 1)
+01000000000100010101000010010011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#28) OPC_OP - ADD
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 0, rs1 = 2, rs2 = 3, funct7 = 0)
+00000000001100010000000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#29) OPC_OP - SUB
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 0, rs1 = 2, rs2 = 3, funct7 = 0100000)
+01000000001100010000000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#30) OPC_OP - SLL
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 001, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010001000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#31) OPC_OP - SLT
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 010, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010010000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#32) OPC_OP - SLTU
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 011, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010011000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#33) OPC_OP - XOR
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 100, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010100000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#34) OPC_OP - SRL
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 101, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010101000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#35) OPC_OP - SRA
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 101, rs1 = 2, rs2 = 3, funct7 = 0100000)
+01000000001100010101000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#36) OPC_OP - OR
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 101, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010110000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#37) OPC_OP - AND
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b) (op = 0110011, rd = 1, funct3 = 111, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010111000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#38) STALL
+#stall (1b)
+1
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000001000
+#instr (32b) (op = 0110011, rd = 1, funct3 = 101, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010110000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#39) FLUSH
+#stall (1b)
+0
+#flush (1b)
+1
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000010
+#instr (32b) (op = 0110011, rd = 1, funct3 = 101, rs1 = 2, rs2 = 3, funct7 = 0000000)
+00000000001100010110000010110011
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#40) EXCEPTION
+#stall (1b)
+0
+#flush (1b)
+0
+#INPUT FROM FETCH
+#pc_in (16b)
+0000000000000001
+#instr (32b)
+00000000000000000000000000000000
+#INPUT FROM WRITEBACK
+#reg_write.write (1b)
+0
+#reg_write.reg (5b)
+00000
+#reg_write.data (32b)
+00000000000000000000000000000000

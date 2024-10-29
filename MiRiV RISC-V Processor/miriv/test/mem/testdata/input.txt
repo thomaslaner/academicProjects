@@ -1,0 +1,296 @@
+#TEST AGENDA:
+#
+#FLUSH
+# 1)flush
+#   causes the unit to store a nop to the pipeline registers
+# 2)stall
+#   causes the stage not to save inputs into its internal registers
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+#1) no branch
+#stall
+0
+#flush
+0
+#pcnew hex
+0000
+#pcold hex
+0000
+#MEM_OP - branch
+BR_NOP
+#MEM_OP - read
+0
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000000
+#wrdata hex
+00000000
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+00000000
+
+#2) no branch
+#stall
+0
+#flush
+0
+#pcnew hex
+1000
+#pcold hex
+1000
+#MEM_OP - branch
+BR_NOP
+#MEM_OP - read
+0
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000000
+#wrdata hex
+00000000
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+00000000
+
+#3) unconditional branch
+#stall
+0
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0004
+#MEM_OP - branch
+BR_BR
+#MEM_OP - read
+0
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000000
+#wrdata hex
+00000000
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+00000000
+
+#4) conditional branch zero=0
+#stall
+0
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0008
+#MEM_OP - branch
+BR_CND
+#MEM_OP - read
+1
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000000
+#wrdata hex
+00000000
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+00000000
+
+#5) conditional branch zero=1
+#stall
+0
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0008
+#MEM_OP - branch
+BR_CND
+#MEM_OP - read
+1
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000001
+#wrdata hex
+00000000
+#zero
+1
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+00000000
+
+#6) conditional branch (condition inverted) zero=1
+#stall
+0
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0008
+#MEM_OP - branch
+BR_CNDI
+#MEM_OP - read
+1
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000C00
+#wrdata hex
+00000000
+#zero
+1
+#MEM_IN - busy
+1
+#MEM_IN - readdata hex (little endian)
+00000000
+
+#7) conditional branch (condition inverted) zero=0
+#stall
+0
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0004
+#MEM_OP - branch
+BR_CNDI
+#MEM_OP - read
+1
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+000000B0
+#wrdata hex
+00000000
+#zero
+0
+#MEM_IN - busy
+1
+#MEM_IN - readdata hex (little endian)
+0A000000
+
+#8) no branch - write
+#stall
+0
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0004
+#MEM_OP - branch
+BR_NOP
+#MEM_OP - read
+0
+#MEM_OP - write
+1
+#MEM_OP - type
+MEM_B
+#aluresult hex
+000000D0
+#wrdata hex
+0000000E
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+0A000000
+
+#9) stall
+#stall
+1
+#flush
+0
+#pcnew hex
+000C
+#pcold hex
+0004
+#MEM_OP - branch
+BR_NOP
+#MEM_OP - read
+0
+#MEM_OP - write
+1
+#MEM_OP - type
+MEM_B
+#aluresult hex
+00000010
+#wrdata hex
+0000000B
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+0A000000
+
+#10) flush
+#stall
+0
+#flush
+1
+#pcnew hex
+000C
+#pcold hex
+0004
+#MEM_OP - branch
+BR_NOP
+#MEM_OP - read
+0
+#MEM_OP - write
+0
+#MEM_OP - type
+MEM_W
+#aluresult hex
+00000010
+#wrdata hex
+0000000B
+#zero
+0
+#MEM_IN - busy
+0
+#MEM_IN - readdata hex (little endian)
+00000000

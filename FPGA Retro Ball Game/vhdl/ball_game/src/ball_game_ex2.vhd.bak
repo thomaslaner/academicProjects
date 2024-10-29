@@ -1,0 +1,44 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.gfx_if_pkg.all;
+use work.math_pkg.all;
+use work.nes_controller_pkg.all;
+use work.audio_cntrl_pkg.all;
+use work.object_collider_pkg.all;
+use work.ball_game_pkg.all;
+use work.prng_pkg.all;
+use work.ram_pkg.all;
+
+architecture arch of ball_game is 
+
+    type internal_game_state is (RESET, );
+
+begin
+
+    sync : process( all )
+    begin
+        if res_n = '0' then
+            internal_game_state <= RESET;
+        elsif rising_edge(clk) then
+            internal_game_state <= internal_game_state_next;
+        end if ;
+    end process ; -- sync
+
+    next_state_logic : process( all )
+    begin
+        
+        internal_game_state_next <= internal_game_state;
+
+        case( internal_game_state ) is
+        
+            when RESET =>
+                
+        
+            when others =>
+        
+        end case ;
+
+    end process ; -- next_state_logic
+
+end arch ;

@@ -1,0 +1,1640 @@
+
+#1) OPC_LUI  
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_AND
+#exec_op.alusrc1 (1b - selecting ALU input)
+1
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000 
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction) #input immediate sll by 12
+00000000000000000001000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#2) OPC_AUIPC
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+1
+#exec_op.rs1 (5b - first register operand)
+00000 
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction) #input immediate sll by 12
+00000000000000000001000000000000 
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#3) OPC_JAL
+#pc_out (16b - next program counter)
+0000000000000001 
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000 
+#exec_op.rs2 (5b - second register operaand)
+00010
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000001000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010 
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_BR
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_OPC
+#exc_dec (1b - if exception happened)
+0
+
+#4) OPC_JALR
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+1
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_BR
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_OPC
+#exc_dec (1b - if exception happened)
+0
+
+#5) OPC_BRANCH - BEQ
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SUB
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_CND
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#6) OPC_BRANCH - BNE
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SUB
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_CNDI
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#7) OPC_BRANCH - BLT
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLT
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_CND
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#8) OPC_BRANCH - BGE
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLT
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_CNDI
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#9) OPC_BRANCH - BLTU
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLTU
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_CND
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#10) OPC_BRANCH - BGEU
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLTU
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000010
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_CNDI
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#11) OPC_LOAD - LB
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+1
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_B
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_MEM
+#exc_dec (1b - if exception happened)
+0
+
+#12) OPC_LOAD - LH
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+1
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_H
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_MEM
+#exc_dec (1b - if exception happened)
+0
+
+#13) OPC_LOAD - LW
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+1
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_MEM
+#exc_dec (1b - if exception happened)
+0
+
+#14) OPC_LOAD - LBU
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+1
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_BU
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_MEM
+#exc_dec (1b - if exception happened)
+0
+
+#15) OPC_LOAD - LHU
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+1
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_HU
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_MEM
+#exc_dec (1b - if exception happened)
+0
+
+#16) OPC_STORE - SB
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+1
+#mem_op.memtype
+MEM_B
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#17) OPC_STORE - SH
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+1
+#mem_op.memtype
+MEM_H
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#18) OPC_STORE - SW
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+1
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#19) OPC_OP_IMM
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#20) OPC_OP_IMM - SLTI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLT
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#21) OPC_OP_IMM - SLTIU
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLTU
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#22) OPC_OP_IMM - XORI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_XOR
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#23) OPC_OP_IMM - ORI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_OR
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#24) OPC_OP_IMM - ANDI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_AND
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#25) OPC_OP_IMM - SLLI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLL
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#26) OPC_OP_IMM - SRLI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SRL
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#27) OPC_OP_IMM - SRAI
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SRA
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00001
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000010000000001
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#28) OPC_OP - ADD
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#29) OPC_OP - SUB
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SUB
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#30) OPC_OP - SLL
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLL
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#31) OPC_OP - SLT
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLT
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#32) OPC_OP - SLTU
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SLTU
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#33) OPC_OP - XOR
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_XOR
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#34) OPC_OP - SRL
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SRL
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#35) OPC_OP - SRA
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_SRA
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#36) OPC_OP - OR
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_OR
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#37) OPC_OP - AND
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_AND
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#38) STALL
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_AND
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00010 
+#exec_op.rs2 (5b - second register operaand)
+00011
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000001000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000010
+#exec_op.imm (32b - immediate value from instruction)
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00001
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#39) FLUSH
+#pc_out (16b - next program counter)
+0000000000000010
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_ADD
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+1
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction (input immediate sll by 12))
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+1
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+0
+
+#40) EXCEPTION
+#pc_out (16b - next program counter)
+0000000000000001
+#OPERATION FOR EXECUTE STAGE
+#exec_op.aluop (type of ALU_operation)
+ALU_NOP
+#exec_op.alusrc1 (1b - selecting ALU input)
+0
+#exec_op.alusrc2 (1b - selecting ALU input)
+0
+#exec_op.alusrc3 (1b - selecting new PC to be calculated for jmp/branch)
+0
+#exec_op.rs1 (5b - first register operand)
+00000
+#exec_op.rs2 (5b - second register operaand)
+00000
+#exec_op.readdata1 (32b - data from first register file read port)
+00000000000000000000000000000000
+#exec_op.readdata2 (32b - data from second register file read port)
+00000000000000000000000000000000
+#exec_op.imm (32b - immediate value from instruction (input immediate sll by 12))
+00000000000000000000000000000000
+#OPERATION FOR MEMORY STAGE
+#mem_op.branch
+BR_NOP
+#mem_op.memread
+0
+#mem_op.memwrite
+0
+#mem_op.memtype
+MEM_W
+#OPERATION FOR WRITEBACK_STAGE
+#wb_op.rd (5b - address of register to be written to)
+00000
+#wb_op.write (1b - write to register)
+0
+#wb_op.src (source of data to be written to register file (ALU -result /MEM - result/OPC - old pc +4))
+WBS_ALU
+#exc_dec (1b - if exception happened)
+1
